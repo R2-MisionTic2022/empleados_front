@@ -5,6 +5,7 @@ import app from "../../app.json";
 import { isNull } from 'util';
 import Cookies from "universal-cookie";
 import { calcularExpirarSesion } from '../helper/helper';
+import Loading from '../loading/loading';
 import './login.css'
 
 const { APIHOST } = app;
@@ -14,12 +15,14 @@ export default class login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            loading: false,
             usuario:'',
             pass:'',
         };
     }
 
     iniciarSesion(){
+        this.setState({ loading: true });
         axios.post(`${APIHOST}/usuarios/login`,{
         usuario: this.state.usuario,
         pass: this.state.pass,
@@ -32,16 +35,23 @@ export default class login extends React.Component {
                 path: '/',
                 expires: calcularExpirarSesion(),
             });
+            this.props.history.push(window.open('/empleados')
+            );
+
         }
+        this.setState({ loading: false });
     })
     .catch((err) => {
         console.log(err);
+        this.setState({ loading: false });
+
     });
     }   
 
     render() { 
         return ( 
             <Container id="login-container">
+            <Loading show={this.state.loading}/>
             <Row>
                 <Col>
                     <Row>
